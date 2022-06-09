@@ -9,10 +9,10 @@ type Aluno struct {
 	gorm.Model
 	Nome string `json:"nome" validate:"nonzero"`
 	CPF  string `json:"cpf" validate:"len=11"`
-	RG   string `json:"rg" validate:"len=11"`
+	RG   string `json:"rg" validate:"len=9"`
 }
 
-func ValidateStudentData(aluno *Aluno) error {
+func ValidaDadosAluno(aluno *Aluno) error {
 	if err := validator.Validate(aluno); err != nil {
 		return err
 	}
