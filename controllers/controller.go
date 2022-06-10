@@ -96,7 +96,10 @@ func BuscaAlunoPorCPF(c *gin.Context) {
 }
 
 func ExibePaginaIndex(c *gin.Context) {
+	var alunos []models.Aluno
+	database.DB.Find(&alunos)
+
 	c.HTML(http.StatusOK, "index.html", gin.H{
-		"mensagem": "bem vindos",
+		"alunos": alunos,
 	})
 }
