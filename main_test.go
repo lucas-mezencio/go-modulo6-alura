@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/guilhermeonrails/api-go-gin/controllers"
 	"github.com/guilhermeonrails/api-go-gin/database"
@@ -9,6 +10,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 )
 
@@ -79,4 +81,25 @@ func TestBuscaAlunoPorCPFHandler(t *testing.T) {
 	r.ServeHTTP(res, req)
 
 	assert.Equal(t, http.StatusOK, res.Code)
+}
+
+// testa comparando com o corpo da requisição
+func TestFindAlunoByIdHandler(t *testing.T) {
+	database.ConectaComBancoDeDados()
+	CriaAlunoMock()
+	defer DeletaAlunoMock()
+
+	r := SetupRotasDeTeste()
+	r.GET("/alunos/:id", controllers.BuscaAlunoPorID)
+
+	path := "/alunos/" + strconv.Itoa(ID)
+	req, _ := http.NewRequest("GET", path, nil)
+	res := httptest.NewRecorder()
+	r.ServeHTTP(res, req)
+
+	var alunoMock models.Aluno
+
+	//converte todos os bytes para json e armazena no destino
+	_ = json.Unmarshal(res.Body.Bytes(), &alunoMock)
+	assert.Equal(t, "Nome aluno teste", alunoMock.Nome)
 }
