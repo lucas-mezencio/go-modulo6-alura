@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/guilhermeonrails/api-go-gin/database"
 	"github.com/guilhermeonrails/api-go-gin/models"
+	_ "github.com/swaggo/swag/example/celler/httputil"
 )
 
 func ExibeTodosAlunos(c *gin.Context) {
@@ -21,6 +22,15 @@ func Saudacao(c *gin.Context) {
 	})
 }
 
+//CriaNovoAluno godoc
+//@Summary 		Cria novo aluno
+//@Description	Rota para criar novo aluno
+//@Tags 		alunos
+//@Accept 		json
+//@Produce		json
+//@Success 		200 {object} models.Aluno true
+//@Failure		400 {object} httputil.HTTPError
+//@Router		/alunos [post]
 func CriaNovoAluno(c *gin.Context) {
 	var aluno models.Aluno
 	if err := c.ShouldBindJSON(&aluno); err != nil {
