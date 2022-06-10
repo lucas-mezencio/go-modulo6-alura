@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/guilhermeonrails/api-go-gin/controllers"
@@ -101,5 +102,43 @@ func TestFindAlunoByIdHandler(t *testing.T) {
 
 	//converte todos os bytes para json e armazena no destino
 	_ = json.Unmarshal(res.Body.Bytes(), &alunoMock)
+	assert.Equal(t, "Nome aluno teste", alunoMock.Nome)
+}
+
+func TestDeletaAlunoHandler(t *testing.T) {
+	database.ConectaComBancoDeDados()
+	CriaAlunoMock()
+	r := SetupRotasDeTeste()
+	r.DELETE("/alunos/:id", controllers.DeletaAluno)
+
+	path := "/alunos/" + strconv.Itoa(ID)
+	req, _ := http.NewRequest("DELETE", path, nil)
+	res := httptest.NewRecorder()
+	r.ServeHTTP(res, req)
+	assert.Equal(t, http.StatusOK, res.Code)
+}
+
+func TestEditaAlunoHandler(t *testing.T) {
+	database.ConectaComBancoDeDados()
+	CriaAlunoMock()
+	defer DeletaAlunoMock()
+
+	r := SetupRotasDeTeste()
+	r.PATCH("/alunos/:id", controllers.EditaAluno)
+
+	aluno := models.Aluno{
+		Nome: "Nome aluno teste",
+		CPF:  "02345678910",
+		RG:   "123456460",
+	}
+	alunoJson, _ := json.Marshal(aluno)
+	editPath := "/alunos/" + strconv.Itoa(ID)
+	req, _ := http.NewRequest("PATCH", editPath, bytes.NewBuffer(alunoJson))
+	res := httptest.NewRecorder()
+	r.ServeHTTP(res, req)
+	var alunoMock models.Aluno
+	json.Unmarshal(res.Body.Bytes(), &alunoMock)
+	assert.Equal(t, "02345678910", alunoMock.CPF)
+	assert.Equal(t, "123456460", alunoMock.RG)
 	assert.Equal(t, "Nome aluno teste", alunoMock.Nome)
 }
