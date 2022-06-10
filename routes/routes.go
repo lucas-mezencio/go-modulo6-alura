@@ -10,6 +10,8 @@ func HandleRequests() {
 
 	//indica ao gin para rendenizar paginas html
 	r.LoadHTMLGlob("templates/*")
+	//indica ao gin para carregar recursos staticos
+	r.Static("/assets", "./assets")
 
 	r.GET("/:nome", controllers.Saudacao)
 	r.GET("/alunos", controllers.ExibeTodosAlunos)
